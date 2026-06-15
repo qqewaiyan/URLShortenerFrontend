@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #f8fafc;
+  --color-brand-200: #e2e8f0;
+  --color-brand-300: #cbd5e1;
+  --color-brand-400: #94a3b8;
+  --color-brand-500: #64748b;
+  --color-brand-600: #475569;
+  --color-brand-800: #1e293b;
+  --color-brand-900: #0f172a;
+
+  --shadow-soft: 0 4px 12px rgb(0 0 0 / 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: white;
+  color: var(--color-brand-900);
+}
+
+* {
+  border-color: var(--color-brand-200);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 200ms;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--color-brand-900);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-brand-800);
+}
+
+.btn-secondary {
+  background-color: white;
+  color: var(--color-brand-900);
+  border: 1px solid var(--color-brand-300);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-brand-50);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-brand-600);
+}
+
+.btn-ghost:hover {
+  background-color: var(--color-brand-50);
+}
+
+.btn-danger {
+  background-color: rgb(220 38 38);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: rgb(185 28 28);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  background: white;
+  border: 1px solid var(--color-brand-300);
+  border-radius: 0.5rem;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-brand-200);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.link {
+  color: var(--color-brand-900);
+  transition: color 200ms;
+}
+
+.link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+button, [role="button"] {
+    cursor: pointer;
+}
+.bg-brand-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(245 245 245 / var(--tw-bg-opacity, 1));
+}

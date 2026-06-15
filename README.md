@@ -1,3 +1,5 @@
+URLShortener website like bitly where users can create their own short url.
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

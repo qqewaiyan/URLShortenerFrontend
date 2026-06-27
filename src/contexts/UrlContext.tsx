@@ -1,55 +1,85 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type  ShortUrl  from '../types';
-import { mockUrls } from '../lib/constants';
+import { useAuth } from './AuthContext';
+import apiClient from '../api/apiClient';
 
 interface UrlContextType {
   urls: ShortUrl[];
   addUrl: (originalUrl: string) => Promise<ShortUrl>;
-  deleteUrl: (id: string) => Promise<void>;
+  deleteUrl: (id: number) => Promise<void>;
   getUrlByCode: (shortCode: string) => ShortUrl | undefined;
   getTotalClicks: () => number;
 }
 
 const UrlContext = createContext<UrlContextType | undefined>(undefined);
 
-function generateShortCode(): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < 6; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
 
 export function UrlProvider({ children }: { children: ReactNode }) {
-  const [urls, setUrls] = useState<ShortUrl[]>(mockUrls);
+
+
+  const { user } = useAuth();
+  const [urls, setUrls] = useState<ShortUrl[]>([]);
+
+  useEffect(() => {
+  const loadUrls = async () => {
+    if (!user?.id) return;
+
+    try {
+      const result = await apiClient.get(`/url/user/${user.id}`);
+      const response = result.data;
+      if (result.status !== 200) throw new Error("Error getting URLs");
+      console.log(response)
+      setUrls(response);
+    } catch (err) {
+      console.error(err);
+      setUrls([]);
+    }
+  };
+
+  loadUrls();
+}, [user?.id]);
 
   const addUrl = async (originalUrl: string): Promise<ShortUrl> => {
-    const shortCode = generateShortCode();
-    const newUrl: ShortUrl = {
-      id: Date.now().toString(),
-      short_code: shortCode,
-      short_url: `https://shortify.link/${shortCode}`,
+  try {
+    const result = await apiClient.post("/url/shorten", {
       original_url: originalUrl,
-      clicks: 0,
-      created_at: new Date().toISOString(),
-      user_id: '1',
-    };
-    setUrls((prev) => [newUrl, ...prev]);
-    return newUrl;
-  };
+      user_id: user?.id,
+    });
+      const response = result.data;
 
-  const deleteUrl = async (id: string) => {
+    if (result.status !== 200) {
+      throw new Error("Failed to create URL");
+    }
+    console.log(result);
+    const newUrl: ShortUrl = response;
+
+    setUrls((prev) => [newUrl, ...prev]);
+
+    return newUrl;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+  const deleteUrl = async (id: number) => {
+  try {
+    await apiClient.delete(`/url/${id}`);
+
     setUrls((prev) => prev.filter((url) => url.id !== id));
-  };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
 
   const getUrlByCode = (shortCode: string) => {
-    return urls.find((url) => url.short_code === shortCode);
+    return urls.find((url) => url.shortCode === shortCode);
   };
 
   const getTotalClicks = () => {
-    return urls.reduce((sum, url) => sum + url.clicks, 0);
+    return urls.reduce((sum, url) => sum + url.clickCount, 0);
   };
 
   return (

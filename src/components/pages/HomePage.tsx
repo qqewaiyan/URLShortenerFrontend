@@ -104,6 +104,7 @@ const handleShorten = async (e: React.FormEvent) => {
               <form onSubmit={handleShorten} className="mt-10 max-w-xl mx-auto">
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex-1 relative">
+                    <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-400" /> 
                     <Input
                       type="url"
                       placeholder="Paste your long URL here..."

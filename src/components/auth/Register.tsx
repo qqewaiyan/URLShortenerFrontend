@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import  Button  from '../ui/Button.tsx';
 import  Input  from '../ui/Input.tsx';
-import { Link2, Mail, Lock, User, Send } from 'lucide-react';
+import { Link2, Mail, Lock, User, Send, EyeClosedIcon,EyeIcon } from 'lucide-react';
 
 export function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [showPassword, togglePasswordShow] = useState(false);
+  const [showConfirmPassword, toggleConfirmPasswordShow] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -116,13 +118,24 @@ export function RegisterPage() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-400" />
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-11"
                   required
                 />
+                {showPassword ? (
+                  <EyeIcon
+                    onClick={() => togglePasswordShow(!showPassword)}
+                    className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-400"
+                  />
+                ) : (
+                  <EyeClosedIcon
+                    onClick={() => togglePasswordShow(!showPassword)}
+                    className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-400"
+                  />
+                )}
               </div>
             </div>
 
@@ -134,13 +147,24 @@ export function RegisterPage() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-400" />
                 <Input
                   id="confirmPassword"
-                  type="password"
+                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="pl-11"
                   required
                 />
+                {showConfirmPassword ? (
+                  <EyeIcon
+                    onClick={() => toggleConfirmPasswordShow(!showConfirmPassword)}
+                    className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-400"
+                  />
+                ) : (
+                  <EyeClosedIcon
+                    onClick={() => toggleConfirmPasswordShow(!showConfirmPassword)}
+                    className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-400"
+                  />
+                )}
               </div>
             </div>
 

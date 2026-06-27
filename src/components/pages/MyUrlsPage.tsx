@@ -19,9 +19,9 @@ function formatDate(dateString: string): string {
 
 function UrlRow({ url, onCopy, onDelete, copiedId }: {
   url: ShortUrl;
-  onCopy: (id: string, shortUrl: string) => void;
-  onDelete: (id: string) => void;
-  copiedId: string | null;
+  onCopy: (id: number, shortUrl: string) => void;
+  onDelete: (id: number) => void;
+  copiedId: number | null;
 }) {
   return (
     <tr className="group hover:bg-brand-50/50 transition-colors">
@@ -32,9 +32,9 @@ function UrlRow({ url, onCopy, onDelete, copiedId }: {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-medium text-brand-900">{url.short_url}</span>
+              <span className="font-medium text-brand-900">{url.shortUrl}</span>
               <button
-                onClick={() => onCopy(url.id, url.short_url)}
+                onClick={() => onCopy(url.id, url.shortUrl)}
                 className="p-1 text-brand-400 hover:text-brand-600 opacity-0 group-hover:opacity-100 transition-opacity"
                 title="Copy link"
               >
@@ -45,19 +45,19 @@ function UrlRow({ url, onCopy, onDelete, copiedId }: {
                 )}
               </button>
             </div>
-            <p className="text-sm text-brand-500 truncate max-w-xs">{url.short_code}</p>
+            <p className="text-sm text-brand-500 truncate max-w-xs">{url.shortCode}</p>
           </div>
         </div>
       </td>
       <td className="py-4 px-4">
         <div className="min-w-0 max-w-md">
           <a
-            href={url.original_url}
+            href={url.originalUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-brand-600 hover:text-brand-900 truncate block"
           >
-            {url.original_url}
+            {url.originalUrl}
           </a>
         </div>
       </td>
@@ -70,13 +70,13 @@ function UrlRow({ url, onCopy, onDelete, copiedId }: {
       <td className="py-4 px-4">
         <div className="flex items-center gap-2 text-sm text-brand-500">
           <Calendar className="w-4 h-4 text-brand-400" />
-          {formatDate(url.created_at)}
+          {formatDate(url.createdAt)}
         </div>
       </td>
       <td className="py-4 pl-4">
         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <a
-            href={url.original_url}
+            href={url.originalUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 text-brand-400 hover:text-brand-600 hover:bg-brand-100 rounded-lg transition-colors"
@@ -102,33 +102,33 @@ export function MyUrlsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
   const [newUrl, setNewUrl] = useState('');
   const [loading, setLoading] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const filteredUrls = urls
     .filter((url) =>
-      url.short_url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      url.original_url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      url.short_code.toLowerCase().includes(searchQuery.toLowerCase())
+      url.shortUrl.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      url.originalUrl.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      url.shortCode.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
       if (sortOrder === 'asc') {
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       }
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-  const handleCopy = (id: string, shortUrl: string) => {
+  const handleCopy = (id: number, shortUrl: string) => {
     navigator.clipboard.writeText(shortUrl);
     setCopiedId(id);
     toast('Link copied to clipboard!');
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     await deleteUrl(id);
     setShowDeleteModal(null);
     toast('URL deleted successfully');

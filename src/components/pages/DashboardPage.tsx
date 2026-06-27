@@ -9,12 +9,11 @@ import { useToast } from '../ui/Toast';
 import { Link2, Link2Icon, MousePointer, Clock, ArrowRight, Copy, CheckCircle, ExternalLink, TrendingUp, Globe, MapPin } from 'lucide-react';
 import { recentActivity } from '../../lib/constants';
 
-function StatCard({ icon: Icon, title, value, subtitle, trend }: {
+function StatCard({ icon: Icon, title, value, subtitle }: {
   icon: React.ElementType;
   title: string;
   value: string | number;
   subtitle: string;
-  trend?: number;
 }) {
   return (
     <Card className="relative overflow-hidden">
@@ -28,15 +27,6 @@ function StatCard({ icon: Icon, title, value, subtitle, trend }: {
           <Icon className="w-6 h-6 text-brand-900" />
         </div>
       </div>
-      {trend !== undefined && (
-        <div className="flex items-center gap-1 mt-4 text-sm">
-          <TrendingUp className={`w-4 h-4 ${trend >= 0 ? 'text-green-500' : 'text-red-500'}`} />
-          <span className={trend >= 0 ? 'text-green-600' : 'text-red-600'}>
-            {trend >= 0 ? '+' : ''}{trend}%
-          </span>
-          <span className="text-brand-400 ml-1">vs last month</span>
-        </div>
-      )}
     </Card>
   );
 }
@@ -56,7 +46,7 @@ export function DashboardPage() {
     if (!newUrl) return;
     setLoading(true);
     const url = await addUrl(newUrl);
-    setCreatedUrl({ short: url.short_url, original: url.original_url });
+    setCreatedUrl({ short: url.shortUrl, original: url.originalUrl });
     setNewUrl('');
     setLoading(false);
   };
@@ -84,21 +74,18 @@ export function DashboardPage() {
             title="Total URLs"
             value={urls.length}
             subtitle="links created"
-            trend={12}
           />
           <StatCard
             icon={MousePointer}
             title="Total Clicks"
             value={getTotalClicks().toLocaleString()}
             subtitle="all time"
-            trend={24}
           />
           <StatCard
             icon={Clock}
             title="Avg. Clicks/URL"
             value={urls.length > 0 ? Math.round(getTotalClicks() / urls.length) : 0}
             subtitle="performance"
-            trend={8}
           />
         </div>
 
@@ -122,19 +109,19 @@ export function DashboardPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <Link2Icon className="w-4 h-4 text-brand-400 flex-shrink-0" />
-                        <span className="font-medium text-brand-900 truncate">{url.short_url}</span>
+                        <span className="font-medium text-brand-900 truncate">{url.shortUrl}</span>
                       </div>
-                      <p className="text-sm text-brand-500 truncate mt-1">{url.original_url}</p>
+                      <p className="text-sm text-brand-500 truncate mt-1">{url.originalUrl}</p>
                     </div>
                     <div className="flex items-center gap-4 ml-4 flex-shrink-0">
                       <div className="text-right">
                         <div className="flex items-center gap-1 text-sm font-medium text-brand-900">
                           <MousePointer className="w-4 h-4 text-brand-400" />
-                          {url.clicks.toLocaleString()}
+                          {url.clicks}
                         </div>
                       </div>
                       <a
-                        href={url.original_url}
+                        href={url.originalUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 text-brand-400 hover:text-brand-600 hover:bg-white rounded-lg transition-colors"

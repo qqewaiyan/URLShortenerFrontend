@@ -5,6 +5,7 @@ import {
   useEffect,
 } from "react";
 import type { ReactNode } from "react";
+import apiClient from "../api/apiClient";
 import type { User } from "../types";
 import { API_URL } from "../lib/constants";
 
@@ -23,6 +24,24 @@ interface AuthContextType {
   signOut: () => void;
 }
 
+const ACCESS_TOKEN_KEY = "accessToken";
+const USER_ID_KEY = "userId";
+
+const authStorage = {
+  getToken: () => localStorage.getItem(ACCESS_TOKEN_KEY),
+  getUserId: () => localStorage.getItem(USER_ID_KEY),
+
+  setSession: (token: string, userId: string) => {
+    localStorage.setItem(ACCESS_TOKEN_KEY, token);
+    localStorage.setItem(USER_ID_KEY, userId);
+  },
+
+  clear: () => {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(USER_ID_KEY);
+  },
+};
+
 const AuthContext = createContext<
   AuthContextType | undefined
 >(undefined);
@@ -38,40 +57,30 @@ export function AuthProvider({
   );
   const checkSession = async () => {
     const token =
-      localStorage.getItem("accessToken");
-    const userId = localStorage.getItem("userId");
+      authStorage.getToken();
+    const userId = authStorage.getUserId();
     if (!token || !userId) {
       setLoading(false);
       return;
     }
 
     try {
-      const response =   await fetch(
-        `${API_URL}/user/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
 
-      if (!response.ok) {
-        localStorage.removeItem(
-          "accessToken"
-        );
+      const result = await apiClient.get(`${API_URL}/user/${userId}`);
+      console.log(result);
+      const response = result.data;
+      if (result.status !== 200) {
+        authStorage.clear();
 
         setUser(null);
         setLoading(false);
         return;
       }
 
-      const data = await response.json();
 
-      setUser(data);
+      setUser(response);
     } catch {
-      localStorage.removeItem(
-        "accessToken"
-      );
+      authStorage.clear();
 
       setUser(null);
     } finally {
@@ -84,8 +93,8 @@ export function AuthProvider({
 
  useEffect(() => {
   const checkSession = async () => {
-    const token = localStorage.getItem("accessToken");
-
+    const token =  authStorage.getToken();
+   
     if (!token) {
       setLoading(false);
       return;
@@ -102,7 +111,7 @@ export function AuthProvider({
       );
 
       if (!response.ok) {
-        localStorage.removeItem("accessToken");
+        authStorage.clear();
         setUser(null);
         return;
       }
@@ -111,7 +120,7 @@ export function AuthProvider({
 
       setUser(user);
     } catch {
-      localStorage.removeItem("accessToken");
+      authStorage.clear();
       setUser(null);
     } finally {
       setLoading(false);
@@ -128,39 +137,21 @@ export function AuthProvider({
     password: string
   ) => {
     try {
-      const response = await fetch(
-        `${API_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        }
-      );
+      const loginResponse = await apiClient.post("/auth/login", {
+      email,
+      password,
+    });
+    console.log(loginResponse);
+    const response = loginResponse.data;
+      if (loginResponse.status !== 200) {
+    return {
+      error: new Error("Invalid credentials"),
+    };
+  }
 
-      if (!response.ok) {
-        return {
-          error: new Error(
-            "Invalid credentials"
-          ),
-        };
-      }
-
-      const result =
-        await response.json();
-      console.log(result);
-      const userId = result.userId;
-      localStorage.setItem(
-        "accessToken",
-        result.response.atk
-      );
-      localStorage.setItem("userId", userId);
-
+      console.log(response);
+      const userId = response.userId;
+      authStorage.setSession(response.response.atk, userId);
       await checkSession();
 
       return { error: null };
@@ -178,21 +169,11 @@ export function AuthProvider({
     password: string
   ) => {
     try {
-      const response = await fetch(
-        `${API_URL}/auth/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        }
-      );
-
+      const registerResult = await apiClient.post("/auth/register", {
+      email,
+      password,
+    });
+    const response = registerResult.data;
       if (!response.ok) {
         return {
           error: new Error(
@@ -217,10 +198,7 @@ export function AuthProvider({
   };
 
   const signOut = () => {
-    localStorage.removeItem(
-      "accessToken"
-    );
-
+    authStorage.clear();
     setUser(null);
   };
 

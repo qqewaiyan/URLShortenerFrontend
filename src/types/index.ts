@@ -7,13 +7,13 @@ export interface User {
 }
 
 export default interface ShortUrl {
-  id: string;
-  short_code: string;
-  original_url: string;
-  short_url: string;
-  clicks: number;
-  created_at: string;
-  user_id: string;
+  id: number;
+  shortCode: string;
+  originalUrl: string;
+  shortUrl: string;
+  clickCount: number;
+  createdAt: string;
+  userId: number;
 }
 
 export interface DashboardStats {

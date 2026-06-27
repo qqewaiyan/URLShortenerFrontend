@@ -64,7 +64,7 @@ function UrlRow({ url, onCopy, onDelete, copiedId }: {
       <td className="py-4 px-4">
         <div className="flex items-center gap-2">
           <MousePointer className="w-4 h-4 text-brand-400" />
-          <span className="text-sm font-medium text-brand-900">{url.clicks.toLocaleString()}</span>
+          <span className="text-sm font-medium text-brand-900">{url.clickCount.toLocaleString()}</span>
         </div>
       </td>
       <td className="py-4 px-4">

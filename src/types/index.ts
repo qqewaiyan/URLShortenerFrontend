@@ -11,6 +11,7 @@ export default interface ShortUrl {
   shortCode: string;
   originalUrl: string;
   shortUrl: string;
+  
   clickCount: number;
   createdAt: string;
   userId: number;

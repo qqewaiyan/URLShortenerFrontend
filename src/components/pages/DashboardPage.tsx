@@ -117,7 +117,7 @@ export function DashboardPage() {
                       <div className="text-right">
                         <div className="flex items-center gap-1 text-sm font-medium text-brand-900">
                           <MousePointer className="w-4 h-4 text-brand-400" />
-                          {url.clicks}
+                          {url.clickCount.toLocaleString()}
                         </div>
                       </div>
                       <a
